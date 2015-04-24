@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="thelia" defaultIdMethod="native">
+    <table name="customer_group" description="The list of customer groups" namespace="CustomerGroup\Model">
+        <column name="code" type="varchar" required="true" size="45" />
+        <column name="title" type="varchar" size="255" />
+        <column name="description" type="clob" />
+        <column name="is_default" type="boolean" required="true" defaultValue="0" />
+
+        <behavior name="auto_add_pk" />
+
+        <behavior name="timestampable" />
+
+        <behavior name="i18n">
+            <parameter name="i18n_columns" value="title, description" />
+        </behavior>
+
+        <behavior name="sortable">
+            <parameter name="rank_column" value="position" />
+        </behavior>
+    </table>
+
+    <table name="customer_customer_group" description="The list of customer groups" namespace="CustomerGroup\Model" isCrossRef="true">
+        <column name="customer_id" type="integer" required="true" primaryKey="true" />
+        <column name="customer_group_id" type="integer" required="true" primaryKey="true" />
+
+        <foreign-key foreignTable="customer" name="fk_customer_id" onUpdate="restrict" onDelete="cascade">
+            <reference local="customer_id" foreign="id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="customer_group" name="fk_customer_group_id" onUpdate="restrict" onDelete="cascade">
+            <reference local="customer_group_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <external-schema filename="local/config/schema.xml" referenceOnly="true" />
+</database>
