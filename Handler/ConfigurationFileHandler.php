@@ -141,11 +141,12 @@ class ConfigurationFileHandler
      */
     protected function resetDefault()
     {
-        CustomerGroupQuery::create()
+        $defaultGroup = CustomerGroupQuery::create()
             ->filterByIsDefault(true)
-            ->update([
-                'IsDefault' => false
-            ])
-        ;
+            ->findOne();
+
+        $defaultGroup
+            ->setIsDefault(false)
+            ->save();
     }
 }
