@@ -22,6 +22,50 @@ class CustomerCustomerGroupTest extends AbstractCustomerGroupTest
     /**
      * @covers CustomerCustomerGroup::addDefaultCustomerGroupToCustomer()
      */
+    public function testAddDefaultCustomerGroupToCustomerNoDefaultGroup()
+    {
+        // unset the default group
+        /** @var CustomerGroup $defaultGroup */
+        $defaultGroup = self::$testCustomerGroups[0];
+        $defaultGroup
+            ->setIsDefault(false)
+            ->save();
+
+        $newCustomer = new Customer();
+        $newCustomer->setDispatcher($this->dispatcher);
+
+        $newCustomer->createOrUpdate(
+            CustomerTitleQuery::create()->findOneByByDefault(true)->getId(),
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            CountryQuery::create()->findOneByByDefault(true)->getId(),
+            "foo",
+            "foo"
+        );
+
+        // the customer should not be in any groups
+        foreach (self::$TEST_CUSTOMER_GROUP_CODES as $groupCode) {
+            $this->assertFalse(
+                $this->customerGroupHandler->checkCustomerHasGroup($newCustomer, $groupCode)
+            );
+        }
+
+        // reset the default group
+        $defaultGroup
+            ->setIsDefault(true)
+            ->save();
+    }
+
+    /**
+     * @covers CustomerCustomerGroup::addDefaultCustomerGroupToCustomer()
+     */
     public function testNewCustomerIsAddedToDefaultGroup()
     {
         $newCustomer = new Customer();
