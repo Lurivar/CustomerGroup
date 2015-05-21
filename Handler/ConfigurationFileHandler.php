@@ -28,8 +28,7 @@ class ConfigurationFileHandler
             // TODO: Flip when yaml parsing will be up
 //            ->name('#customer[-_\.]?group\.(?:xml|yml|yaml)#i')
             ->name('#customer[-_\.]?group\.xml#i')
-            ->in($module->getAbsoluteConfigPath())
-        ;
+            ->in($module->getAbsoluteConfigPath());
         $count = $finder->count();
 
         if ($count > 1) {
@@ -68,8 +67,8 @@ class ConfigurationFileHandler
             foreach ($customerGroupDefinition->descriptive as $descriptiveDefinition) {
                 $descriptive[] = [
                     'locale' => $descriptiveDefinition->getAttributeAsPhp('locale'),
-                    'title' => (string) $descriptiveDefinition->title,
-                    'description' => (string) $descriptiveDefinition->description
+                    'title' => (string)$descriptiveDefinition->title,
+                    'description' => (string)$descriptiveDefinition->description
                 ];
             }
 
@@ -79,7 +78,7 @@ class ConfigurationFileHandler
             ];
         }
 
-        $parsedConfig['default'] = (string) $xml->default;
+        $parsedConfig['default'] = (string)$xml->default;
 
         return $parsedConfig;
     }
@@ -108,15 +107,13 @@ class ConfigurationFileHandler
         foreach ($moduleConfiguration['customer_group'] as $customerGroupData) {
             if (CustomerGroupQuery::create()->findOneByCode($customerGroupData['code']) === null) {
                 $customerGroup = (new CustomerGroup)
-                    ->setCode($customerGroupData['code'])
-                ;
+                    ->setCode($customerGroupData['code']);
 
                 foreach ($customerGroupData['descriptive'] as $descriptiveData) {
                     $customerGroup
                         ->setLocale($descriptiveData['locale'])
                         ->setTitle($descriptiveData['title'])
-                        ->setDescription($descriptiveData['description'])
-                    ;
+                        ->setDescription($descriptiveData['description']);
                 }
 
                 $customerGroup->save();
@@ -130,8 +127,7 @@ class ConfigurationFileHandler
 
                 $customerGroup
                     ->setIsDefault(true)
-                    ->save()
-                ;
+                    ->save();
             }
         }
     }
@@ -141,13 +137,16 @@ class ConfigurationFileHandler
      */
     protected function resetDefault()
     {
-        CustomerGroupQuery::create()
+        $defaultGroups = CustomerGroupQuery::create()
             ->filterByIsDefault(true)
-            ->update(
-                [
-                    'IsDefault' => false
-                ]
-            )
-        ;
+            ->find();
+
+        foreach ($defaultGroups as $defaultGroup) {
+            $defaultGroup
+                ->setIsDefault(false)
+                ->save();
+        }
+
     }
+
 }
