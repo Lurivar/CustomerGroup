@@ -49,17 +49,20 @@ class CustomerCustomerGroup implements EventSubscriberInterface
     }
 
     /**
-     * Add the customer to the default customer group.
+     * Add the customer to the default customer group (if there is one).
      * @todo Only if there is no customer group in the event !
      * @param CustomerEvent $event
      */
     public function addDefaultCustomerGroupToCustomer(CustomerEvent $event)
     {
+        $defaultCustomerGroup = CustomerGroupQuery::create()->findOneByIsDefault(true);
+        if (null === $defaultCustomerGroup) {
+            return;
+        }
+
         (new CustomerCustomerGroupQuery())
             ->filterByCustomerId($event->getCustomer()->getId())
-            ->filterByCustomerGroupId(
-                CustomerGroupQuery::create()->findOneByIsDefault(true)->getId()
-            )
+            ->filterByCustomerGroupId($defaultCustomerGroup->getId())
             ->findOneOrCreate()
             ->save();
     }
