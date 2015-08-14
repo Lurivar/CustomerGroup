@@ -33,22 +33,7 @@ class CustomerCustomerGroupTest extends AbstractCustomerGroupTest
 
         $newCustomer = new Customer();
         $newCustomer->setDispatcher($this->dispatcher);
-
-        $newCustomer->createOrUpdate(
-            CustomerTitleQuery::create()->findOneByByDefault(true)->getId(),
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            CountryQuery::create()->findOneByByDefault(true)->getId(),
-            "foo",
-            "foo"
-        );
+        $newCustomer = static::makeTestCustomer($newCustomer);
 
         // the customer should not be in any groups
         foreach (self::$TEST_CUSTOMER_GROUP_CODES as $groupCode) {
@@ -70,22 +55,7 @@ class CustomerCustomerGroupTest extends AbstractCustomerGroupTest
     {
         $newCustomer = new Customer();
         $newCustomer->setDispatcher($this->dispatcher);
-
-        $newCustomer->createOrUpdate(
-            CustomerTitleQuery::create()->findOneByByDefault(true)->getId(),
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            CountryQuery::create()->findOneByByDefault(true)->getId(),
-            "foo",
-            "foo"
-        );
+        $newCustomer = static::makeTestCustomer($newCustomer);
 
         /** @var CustomerGroup $defaultGroup */
         $defaultGroup = self::$testCustomerGroups[0];

@@ -20,8 +20,10 @@ use Thelia\Core\Security\SecurityContext;
 use Thelia\Core\Template\ParserInterface;
 use Thelia\Core\Translation\Translator;
 use Thelia\Mailer\MailerFactory;
+use Thelia\Model\Country;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\Customer;
+use Thelia\Model\CustomerTitle;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\Module;
 use Thelia\Tests\ContainerAwareTestCase;
@@ -88,7 +90,9 @@ abstract class AbstractCustomerGroupTest extends ContainerAwareTestCase
 
         Propel::getConnection()->beginTransaction();
 
-        static::makeTestCustomers(static::TEST_CUSTOMERS_COUNT);
+        for ($i = 0; $i < static::TEST_CUSTOMERS_COUNT; ++$i) {
+            static::$testCustomers[$i] = static::makeTestCustomer();
+        }
         static::makeTestGroups();
     }
 
@@ -135,35 +139,50 @@ abstract class AbstractCustomerGroupTest extends ContainerAwareTestCase
     }
 
     /**
-     * Create test customers.
-     * @param int $count Number of customers to create.
+     * Create a test customer.
+     * Optionally use a customer model as a base. This method uses the Customer::createOrUpdate method, which will
+     *     overwrite some fields. Use it only for things such as adding a dispatcher.
+     * @param Customer|null $customer Base customer.
+     * @return Customer
      * @throws PropelException
      */
-    protected static function makeTestCustomers($count)
+    public static function makeTestCustomer(Customer $customer = null)
     {
+        if (null === $customer) {
+            $customer = new Customer();
+        }
+
+        // make sure we have a customer title and country available, as they are required to create a customer
+        if (null === $customerTitle = CustomerTitleQuery::create()->findOneByByDefault(true)) {
+            $customerTitle = new CustomerTitle();
+            $customerTitle->save();
+        }
+
+        if (null === $country = CountryQuery::create()->findOneByByDefault(true)) {
+            $country = new Country();
+            $country->save();
+        }
+
         // Customer::createOrUpdate() uses the Translator, make sure it has been instantiated
         new Translator(new Container());
 
-        for ($i = 0; $i < $count; ++$i) {
-            $customer = new Customer();
-            $customer->createOrUpdate(
-                CustomerTitleQuery::create()->findOneByByDefault(true)->getId(),
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                CountryQuery::create()->findOneByByDefault(true)->getId(),
-                "foo",
-                "foo"
-            );
+        $customer->createOrUpdate(
+            $customerTitle->getId(),
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            $country->getId(),
+            "foo",
+            "foo"
+        );
 
-            static::$testCustomers[$i] = $customer;
-        }
+        return $customer;
     }
 
     /**
