@@ -120,8 +120,8 @@ abstract class AbstractCustomerGroupTest extends ContainerAwareTestCase
             new CustomerAction(
                 $securityContext,
                 new MailerFactory(
-                    $this->getMock(EventDispatcherInterface::class),
-                    $this->getMock(ParserInterface::class)
+                    $this->getMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'),
+                    $this->getMock('Thelia\Core\Template\ParserInterface')
                 )
             )
         );
@@ -233,7 +233,7 @@ abstract class AbstractCustomerGroupTest extends ContainerAwareTestCase
         $moduleConfigPath = $modulePath . DIRECTORY_SEPARATOR . "Config";
 
         $stubModule = $this
-            ->getMockBuilder(Module::class)
+            ->getMockBuilder('Thelia\Model\Module')
             ->getMock();
 
         $stubModule->method("getAbsoluteBaseDir")->willReturn($modulePath);

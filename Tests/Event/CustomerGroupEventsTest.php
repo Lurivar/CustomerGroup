@@ -10,6 +10,8 @@ use CustomerGroup\Tests\AbstractCustomerGroupTest;
  */
 class CustomerGroupEventsTest extends AbstractCustomerGroupTest
 {
+    const MODULE_EVENTS_CLASS = 'CustomerGroup\Event\CustomerGroupEvents';
+
     /**
      * Assert that a class has a constant.
      * @param string $constantName Expected constant name.
@@ -27,7 +29,7 @@ class CustomerGroupEventsTest extends AbstractCustomerGroupTest
      */
     public function testDefinesAllModuleEvents()
     {
-        $this->assertClassHasConstant("CREATE_CUSTOMER_GROUP", CustomerGroupEvents::class);
-        $this->assertClassHasConstant("ADD_CUSTOMER_TO_CUSTOMER_GROUP", CustomerGroupEvents::class);
+        $this->assertClassHasConstant("CREATE_CUSTOMER_GROUP", static::MODULE_EVENTS_CLASS);
+        $this->assertClassHasConstant("ADD_CUSTOMER_TO_CUSTOMER_GROUP", static::MODULE_EVENTS_CLASS);
     }
 }
