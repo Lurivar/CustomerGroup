@@ -27,7 +27,7 @@ class ModuleEventListenerTest extends AbstractCustomerGroupTest
 
         // get a mock ConfigurationFileHandler
         $this->configurationFileHandler = $this
-            ->getMockBuilder(ConfigurationFileHandler::class)
+            ->getMockBuilder('CustomerGroup\Handler\ConfigurationFileHandler')
             ->setMethods([
                 "loadConfigurationFile"
             ])
