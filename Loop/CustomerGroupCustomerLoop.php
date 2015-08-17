@@ -26,7 +26,7 @@ class CustomerGroupCustomerLoop extends Customer
             new Join(
                 CustomerTableMap::ID,
                 CustomerCustomerGroupTableMap::CUSTOMER_ID,
-                Criteria::INNER_JOIN
+                Criteria::LEFT_JOIN
             ),
             "customer_customer_group_join"
         );
@@ -34,17 +34,15 @@ class CustomerGroupCustomerLoop extends Customer
             new Join(
                 CustomerCustomerGroupTableMap::CUSTOMER_GROUP_ID,
                 CustomerGroupTableMap::ID,
-                Criteria::INNER_JOIN
+                Criteria::LEFT_JOIN
             ),
             "customer_group_join"
         );
 
         if (null !== $customerGroupId = $this->getArgValue("customer_group_id")) {
-            $customerQuery->addJoinCondition(
-                'customer_group_join',
+            $customerQuery->where(
                 '`customer_group`.`ID` IN (?)',
                 implode(",", $customerGroupId),
-                null,
                 \PDO::PARAM_INT
             );
         }
@@ -52,30 +50,24 @@ class CustomerGroupCustomerLoop extends Customer
         $customerGroupIsDefault = $this->getArgValue("customer_group_is_default");
         if ($customerGroupIsDefault !== BooleanOrBothType::ANY) {
             if ($customerGroupIsDefault === true) {
-                $customerQuery->addJoinCondition(
-                    'customer_group_join',
+                $customerQuery->where(
                     '`customer_group`.`IS_DEFAULT` = ?',
                     1,
-                    null,
                     \PDO::PARAM_INT
                 );
             } elseif ($customerGroupIsDefault === false) {
-                $customerQuery->addJoinCondition(
-                    'customer_group_join',
+                $customerQuery->where(
                     '`customer_group`.`IS_DEFAULT` = ?',
                     0,
-                    null,
                     \PDO::PARAM_INT
                 );
             }
         }
 
         if (null !== $customerGroupCode = $this->getArgValue("customer_group_code")) {
-            $customerQuery->addJoinCondition(
-                'customer_group_join',
+            $customerQuery->where(
                 '`customer_group`.`CODE` LIKE ?',
                 '%' . $customerGroupCode . '%',
-                null,
                 \PDO::PARAM_STR
             );
         }
