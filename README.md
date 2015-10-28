@@ -78,13 +78,27 @@ $dispatcher->dispatch(
 The `customer_group.handler` service provide functions to check if a customer belongs to a group.
 See the `CustomerGroupHandler` class for available methods.
 
-### Check if a customer belongs to a group
+### Get handler (service)
 
 ```PHP
 $groupHandler = $container->get("customer_group.handler");
+```
 
+### Get session customer's customerGroup info
+
+```PHP
+// get customerGroup of the current customer (session)
+$groupHandler->getGroup();
+// get customerGroup code of the current customer (session)
+$groupHandler->checkGroupCode();
+```
+
+### Check if a customer belongs to a group
+
+```PHP
 // check a customer
 $groupHandler->checkCustomerHasGroup($myCustomer, "vip");
+
 // check the customer currently logged-in
 $groupHandler->checkGroup("vip");
 ```

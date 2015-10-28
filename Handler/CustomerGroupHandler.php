@@ -26,22 +26,49 @@ class CustomerGroupHandler
     }
 
     /**
-     * Check if the current current customer is in the asked group
+     * Get CustomerGroup of the current customer
+     *
+     * @return array|null
+     */
+    public function getGroup()
+    {
+        /** @var Request $request */
+        $request = $this->container->get('request');
+
+        $groupInfo = $request->getSession()->get(CustomerGroup::getModuleCode());
+
+        return $groupInfo;
+    }
+
+    /**
+     * Get CustomerGroup Code of the current customer
+     *
+     * @return string|null
+     *
+     * @uses getGroup()
+     */
+    public function getGroupCode()
+    {
+        $customerGroup = $this->getGroup();
+
+        return (isset($customerGroup['code'])) ? $customerGroup['code'] : null;
+    }
+
+    /**
+     * Check if the current customer is in the asked group
      *
      * @param string $groupCode Code for the group to check
      *
      * @return boolean
+     *
+     * @uses getGroupCode()
      */
     public function checkGroup($groupCode)
     {
-        /** @var Request $request */
-        $request = $this->container->get('request');
         /** @var SecurityContext $securityContext */
         $securityContext = $this->container->get('thelia.securityContext');
 
-        $groupInfo = $request->getSession()->get(CustomerGroup::getModuleCode());
-
-        return $securityContext->hasCustomerUser() && $groupInfo !== null && $groupInfo['code'] === $groupCode;
+        return $securityContext->hasCustomerUser() && $this->getGroupCode() === $groupCode;
     }
 
     /**
@@ -57,7 +84,7 @@ class CustomerGroupHandler
         $group = CustomerCustomerGroupQuery::create()
             ->filterByCustomer($customer)
             ->useCustomerGroupQuery()
-                ->filterByCode($groupCode)
+            ->filterByCode($groupCode)
             ->endUse()
             ->findOne();
 
