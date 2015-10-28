@@ -15,6 +15,61 @@ use Thelia\Model\Customer as CustomerModel;
  */
 class CustomerGroupHandlerTest extends AbstractCustomerGroupTest
 {
+
+    /**
+     * @covers CustomerGroupHandler::getGroup()
+     */
+    public function testGetGroup()
+    {
+        /** @var CustomerModel $firstCustomer */
+        $firstCustomer = self::$testCustomers[0];
+        /** @var CustomerGroup $firstCustomerGroup */
+        $firstCustomerGroup = self::$testCustomerGroups[0];
+        /** @var CustomerGroup $secondCustomerGroup */
+        $secondCustomerGroup = self::$testCustomerGroups[1];
+
+        // login the customer
+        $loginEvent = new CustomerLoginEvent($firstCustomer);
+
+        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
+
+        $this->assertEquals(
+            $firstCustomerGroup,
+            $this->customerGroupHandler->getGroup()
+        );
+        $this->assertNotEquals(
+            $secondCustomerGroup,
+            $this->customerGroupHandler->getGroup()
+        );
+    }
+
+    /**
+     * @covers CustomerGroupHandler::getGroupCode()
+     */
+    public function testGetGroupCode()
+    {
+        /** @var CustomerModel $firstCustomer */
+        $firstCustomer = self::$testCustomers[0];
+        /** @var CustomerGroup $firstCustomerGroup */
+        $firstCustomerGroup = self::$testCustomerGroups[0];
+        /** @var CustomerGroup $secondCustomerGroup */
+        $secondCustomerGroup = self::$testCustomerGroups[1];
+
+        // login the customer
+        $loginEvent = new CustomerLoginEvent($firstCustomer);
+
+        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
+
+        $this->assertEquals(
+            $firstCustomerGroup->getCode(),
+            $this->customerGroupHandler->getGroup()
+        );
+        $this->assertNotEquals(
+            $secondCustomerGroup->getCode(),
+            $this->customerGroupHandler->getGroup()
+        );
+    }
+
     /**
      * @covers CustomerGroupHandler::checkCustomerHasGroup()
      */
@@ -58,4 +113,5 @@ class CustomerGroupHandlerTest extends AbstractCustomerGroupTest
             $this->customerGroupHandler->checkGroup($firstCustomerGroup->getCode())
         );
     }
+
 }
