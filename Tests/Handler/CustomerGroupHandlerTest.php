@@ -15,61 +15,6 @@ use Thelia\Model\Customer as CustomerModel;
  */
 class CustomerGroupHandlerTest extends AbstractCustomerGroupTest
 {
-
-    /**
-     * @covers CustomerGroupHandler::getGroup()
-     */
-    public function testGetGroup()
-    {
-        /** @var CustomerModel $firstCustomer */
-        $firstCustomer = self::$testCustomers[0];
-        /** @var CustomerGroup $firstCustomerGroup */
-        $firstCustomerGroup = self::$testCustomerGroups[0];
-        /** @var CustomerGroup $secondCustomerGroup */
-        $secondCustomerGroup = self::$testCustomerGroups[1];
-
-        // login the customer
-        $loginEvent = new CustomerLoginEvent($firstCustomer);
-
-        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
-
-        $this->assertEquals(
-            $firstCustomerGroup,
-            $this->customerGroupHandler->getGroup()
-        );
-        $this->assertNotEquals(
-            $secondCustomerGroup,
-            $this->customerGroupHandler->getGroup()
-        );
-    }
-
-    /**
-     * @covers CustomerGroupHandler::getGroupCode()
-     */
-    public function testGetGroupCode()
-    {
-        /** @var CustomerModel $firstCustomer */
-        $firstCustomer = self::$testCustomers[0];
-        /** @var CustomerGroup $firstCustomerGroup */
-        $firstCustomerGroup = self::$testCustomerGroups[0];
-        /** @var CustomerGroup $secondCustomerGroup */
-        $secondCustomerGroup = self::$testCustomerGroups[1];
-
-        // login the customer
-        $loginEvent = new CustomerLoginEvent($firstCustomer);
-
-        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
-
-        $this->assertEquals(
-            $firstCustomerGroup->getCode(),
-            $this->customerGroupHandler->getGroup()
-        );
-        $this->assertNotEquals(
-            $secondCustomerGroup->getCode(),
-            $this->customerGroupHandler->getGroup()
-        );
-    }
-
     /**
      * @covers CustomerGroupHandler::checkCustomerHasGroup()
      */
@@ -95,7 +40,77 @@ class CustomerGroupHandlerTest extends AbstractCustomerGroupTest
 
     /**
      * @depends testCheckCustomerHasGroup
-     * @covers CustomerGroupHandler::checkGroup()
+     * @covers  CustomerGroupHandler::getGroup()
+     */
+    public function testGetGroup()
+    {
+        /** @var CustomerModel $firstCustomer */
+        $firstCustomer = self::$testCustomers[0];
+        /** @var CustomerGroup $firstCustomerGroup */
+        $firstCustomerGroup = self::$testCustomerGroups[0];
+        /** @var CustomerGroup $secondCustomerGroup */
+        $secondCustomerGroup = self::$testCustomerGroups[1];
+
+        // login the customer
+        $loginEvent = new CustomerLoginEvent($firstCustomer);
+
+        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
+
+        $actual = $this->customerGroupHandler->getGroup();
+
+        $expected = [
+            "id" => $firstCustomerGroup->getId(),
+            "code" => $firstCustomerGroup->getCode(),
+            "default" => $firstCustomerGroup->getIsDefault(),
+        ];
+
+        $this->assertSame(
+            array_diff($actual, $expected),
+            array_diff($expected, $actual)
+        );
+
+        $expected = [
+            "id" => $secondCustomerGroup->getId(),
+            "code" => $secondCustomerGroup->getCode(),
+            "default" => $secondCustomerGroup->getIsDefault(),
+        ];
+        $this->assertNotSame(
+            array_diff($actual, $expected),
+            array_diff($expected, $actual)
+        );
+    }
+
+    /**
+     * @depends testCheckCustomerHasGroup
+     * @covers  CustomerGroupHandler::getGroupCode()
+     */
+    public function testGetGroupCode()
+    {
+        /** @var CustomerModel $firstCustomer */
+        $firstCustomer = self::$testCustomers[0];
+        /** @var CustomerGroup $firstCustomerGroup */
+        $firstCustomerGroup = self::$testCustomerGroups[0];
+        /** @var CustomerGroup $secondCustomerGroup */
+        $secondCustomerGroup = self::$testCustomerGroups[1];
+
+        // login the customer
+        $loginEvent = new CustomerLoginEvent($firstCustomer);
+
+        $this->dispatcher->dispatch(TheliaEvents::CUSTOMER_LOGIN, $loginEvent);
+
+        $this->assertEquals(
+            $firstCustomerGroup->getCode(),
+            $this->customerGroupHandler->getGroupCode()
+        );
+        $this->assertNotEquals(
+            $secondCustomerGroup->getCode(),
+            $this->customerGroupHandler->getGroupCode()
+        );
+    }
+
+    /**
+     * @depends testCheckCustomerHasGroup
+     * @covers  CustomerGroupHandler::checkGroup()
      */
     public function testCheckCustomerGroupFromSession()
     {
@@ -113,5 +128,4 @@ class CustomerGroupHandlerTest extends AbstractCustomerGroupTest
             $this->customerGroupHandler->checkGroup($firstCustomerGroup->getCode())
         );
     }
-
 }
